@@ -1,2 +1,2 @@
 # coolang
-Compiler for a strong typing and garbage collection supporting language called 'Cool'
+Compiler for a static typing and garbage collection supporting language called 'Cool'
