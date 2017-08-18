@@ -1,0 +1,67 @@
+
+// 程序声明
+program ::= [[class; ]]+
+
+// 类声明
+class ::= CLASS TYPE [inherits TYPE] { [[feature; ]]∗}
+
+// 数据/方法成员
+feature ::= ID( [ formal [[, formal]]∗ ] ) : TYPE { expr }
+            | ID : TYPE [ <- expr ]
+
+// 声明
+formal ::= ID : TYPE
+
+// 表达式
+expr :: = expr0 expr_help
+expr_help ::=
+    | AND expr1 expr_help
+    | OR expr1 expr_help
+    | XOR expr1 expr_help
+    | EPSILON
+
+expr0 :: = expr1 expr_help
+expr0_help ::=
+    | < expr1 expr_help
+    | <= expr1 expr_help
+    | = expr1 expr_help
+    | EPSILON
+
+expr1 ::= expr2 expr1_help
+expr1_help ::=
+    |  + expr2 expr1_help
+    |  - expr2 expr1_help
+    |  EPSIlON
+
+expr2 ::= expr3 expr2_help
+expr2_help ::=
+    |  * expr3 expr2_help
+    |  / expr3 expr2_help
+    |  EPSIlON
+
+expr3 ::= normal_expr expr3_help
+expr3_help ::=
+    | [@TYPE].ID( [ expr [[, expr]]∗ ] )  expr3_help
+    | Epsilon
+
+normal_expr ::=
+    | ID id_help
+    | INTEGER
+    | STRING
+    | true
+    | false
+    | (expr)
+    | new TYPE
+    | ˜expr
+    | not expr
+    | isvoid expr
+    | if expr then expr else expr fi
+    | while expr loop expr pool
+    | let ID : TYPE [ <- expr ] [[, ID : TYPE [ <- expr ]]]∗ in expr
+    | case expr of [[ID : TYPE => expr; ]]+esac
+    | { [[expr; ]]+}
+
+id_help ::=
+    | <- expr
+    | ( [ expr [[, expr]]∗ ] )
+    | EPSILON

@@ -54,9 +54,12 @@ enum : TokenKind {
     TK_ID = 278,//TK_TYPEID = 278,TK_OBJECTID = 279,
     TK_ASSIGN = 280,
     TK_NOT = 281,
-    TK_LE = 282,
-    TK_ERROR = 283,
-    TK_LET_STMT = 285
+    TK_AND = 282,
+    TK_OR = 283,
+    TK_XOR = 284,
+    TK_LE = 285,
+    TK_ERROR = 286,
+    TK_LET_STMT = 287
 };
 
 struct Pos {
@@ -94,7 +97,7 @@ public:
 
     const Entry *getSymbol() const;
 
-    const char *kindStr() const;
+    const char *kindRepr() const;
 
     void setPos(const Pos &start, const Pos &end);
 
@@ -130,5 +133,6 @@ private:
     Pos end;        /// 结束位置
 };
 
+extern std::map<TokenKind, const char *> tokenReprMap;
 extern std::map<const char *, Token, StrCmp> tokenMap;
 #endif //COOL_TOKEN_H

@@ -93,137 +93,13 @@ const Entry *Token::getSymbol() const {
     return symbol;
 }
 
-const char *Token::kindStr() const {
-    switch (tokenKind) {
-        case 0:
-            return ("EOF");
-            break;
-        case (TK_CLASS):
-            return ("CLASS");
-            break;
-        case (TK_ELSE):
-            return ("ELSE");
-            break;
-        case (TK_FI):
-            return ("FI");
-            break;
-        case (TK_IF):
-            return ("IF");
-            break;
-        case (TK_IN):
-            return ("IN");
-            break;
-        case (TK_INHERITS):
-            return ("INHERITS");
-            break;
-        case (TK_LET):
-            return ("LET");
-            break;
-        case (TK_LOOP):
-            return ("LOOP");
-            break;
-        case (TK_POOL):
-            return ("POOL");
-            break;
-        case (TK_THEN):
-            return ("THEN");
-            break;
-        case (TK_WHILE):
-            return ("WHILE");
-            break;
-        case (TK_ASSIGN):
-            return ("ASSIGN");
-            break;
-        case (TK_CASE):
-            return ("CASE");
-            break;
-        case (TK_ESAC):
-            return ("ESAC");
-            break;
-        case (TK_OF):
-            return ("OF");
-            break;
-        case (TK_DARROW):
-            return ("DARROW");
-            break;
-        case (TK_NEW):
-            return ("NEW");
-            break;
-        case (TK_STR_CONST):
-            return ("STR_CONST");
-            break;
-        case (TK_INT_CONST):
-            return ("INT_CONST");
-            break;
-        case (TK_BOOL_CONST):
-            return ("BOOL_CONST");
-            break;
-        case (TK_ID):
-            return ("ID");
-            break;
-        case (TK_ERROR):
-            return ("ERROR");
-            break;
-        case (TK_LE):
-            return ("LE");
-            break;
-        case (TK_NOT):
-            return ("NOT");
-            break;
-        case (TK_ISVOID):
-            return ("ISVOID");
-            break;
-        case '+':
-            return ("'+'");
-            break;
-        case '/':
-            return ("'/'");
-            break;
-        case '-':
-            return ("'-'");
-            break;
-        case '*':
-            return ("'*'");
-            break;
-        case '=':
-            return ("'='");
-            break;
-        case '<':
-            return ("'<'");
-            break;
-        case '.':
-            return ("'.'");
-            break;
-        case '~':
-            return ("'~'");
-            break;
-        case ',':
-            return ("','");
-            break;
-        case ';':
-            return ("';'");
-            break;
-        case ':':
-            return ("':'");
-            break;
-        case '(':
-            return ("'('");
-            break;
-        case ')':
-            return ("')'");
-            break;
-        case '@':
-            return ("'@'");
-            break;
-        case '{':
-            return ("'{'");
-            break;
-        case '}':
-            return ("'}'");
-            break;
-        default:
-            return ("<Invalid Token>");
+const char *Token::kindRepr() const {
+    auto end = tokenReprMap.end();
+    auto it = tokenReprMap.find(this->tokenKind);
+    if (it != end) {
+        return it->second;
     }
+    return "<Invalid Token>";
 }
 
 void Token::setPos(const Pos &start, const Pos &end) {
@@ -233,7 +109,7 @@ void Token::setPos(const Pos &start, const Pos &end) {
 
 void Token::print(std::ostream &output) const {
     output << '{'
-           << kindStr() << ", "
+           << kindRepr() << ", "
            << start.row << '.' << start.col
            << '-'
            << end.row << '.' << end.col
@@ -263,6 +139,53 @@ std::ostream &operator<<(std::ostream &os, const Token &token) {
     token.print(os);
 }
 
+std::map<TokenKind, const char *> tokenReprMap = {
+        {TK_CLASS,      "CLASS"},
+        {TK_ELSE,       "ELSE"},
+        {TK_FI,         "FI"},
+        {TK_IF,         "IF"},
+        {TK_IN,         "IN"},
+        {TK_INHERITS,   "INHERITS"},
+        {TK_LET,        "LET"},
+        {TK_LOOP,       "LOOP"},
+        {TK_POOL,       "POOL"},
+        {TK_THEN,       "THEN"},
+        {TK_WHILE,      "WHILE"},
+        {TK_CASE,       "CASE"},
+        {TK_ESAC,       "ESAC"},
+        {TK_OF,         "OF"},
+        {TK_DARROW,     "DARROW"},
+        {TK_NEW,        "NEW"},
+        {TK_ISVOID,     "ISVOID"},
+        {TK_STR_CONST,  "STR_CONST"},
+        {TK_INT_CONST,  "INT_CONST"},
+        {TK_BOOL_CONST, "BOOL_CONST"},
+        {TK_ID,         "ID"},
+        {TK_ASSIGN,     "ASSIGN"},
+        {TK_NOT,        "NOT"},
+        {TK_AND,        "AND"},
+        {TK_OR,         "OR"},
+        {TK_XOR,        "XOR"},
+        {TK_LE,         "LE"},
+        {TK_ERROR,      "ERROR"},
+        {'+',           "'+'"},
+        {'/',           "'/'"},
+        {'-',           "'-'"},
+        {'*',           "'*'"},
+        {'=',           "'='"},
+        {'<',           "'<'"},
+        {'.',           "'.'"},
+        {'~',           "'~'"},
+        {',',           "','"},
+        {';',           "';'"},
+        {':',           "':'"},
+        {'(',           "'('"},
+        {')',           "')'"},
+        {'@',           "'@'"},
+        {'{',           "'{'"},
+        {'}',           "'}'"},
+
+};
 
 std::map<const char *, Token, StrCmp> tokenMap = {
         {"class",    Token::makeTokenNoPos(TK_CLASS)},
@@ -281,24 +204,24 @@ std::map<const char *, Token, StrCmp> tokenMap = {
         {"new",      Token::makeTokenNoPos(TK_NEW)},
         {"isvoid",   Token::makeTokenNoPos(TK_ISVOID)},
         {"not",      Token::makeTokenNoPos(TK_NOT)},
+        {"and",      Token::makeTokenNoPos(TK_AND)},
+        {"or",       Token::makeTokenNoPos(TK_OR)},
+        {"xor",      Token::makeTokenNoPos(TK_XOR)},
         {"true",     Token::makeBoolLiteral(true, Pos(0, 0), Pos(0, 0))},
         {"false",    Token::makeBoolLiteral(false, Pos(0, 0), Pos(0, 0))},
 };
 
-//case '+': return("'+'"); break;
-//case '/': return("'/'"); break;
-//case '-': return("'-'"); break;
-//case '*': return("'*'"); break;
-//case '=': return("'='"); break;
-//case '<': return("'<'"); break;
-//case '.': return("'.'"); break;
-//case '~': return("'~'"); break;
-//case ',': return("','"); break;
-//case ';': return("';'"); break;
-//case ':': return("':'"); break;
-//case '(': return("'('"); break;
-//case ')': return("')'"); break;
-//case '@': return("'@'"); break;
-//case '{': return("'{'"); break;
-//case '}': return("'}'"); break;
-//default:  return("<Invalid Token>");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
